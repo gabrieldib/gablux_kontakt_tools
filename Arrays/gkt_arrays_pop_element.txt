@@ -1,0 +1,77 @@
+on init
+  set_ui_height_px(100)
+  set_ui_color(2236962)
+  make_perfview
+  declare !string_notes[12]
+  !string_notes[0] := "C "
+  !string_notes[1] := "C#"
+  !string_notes[2] := "D "
+  !string_notes[3] := "Eb"
+  !string_notes[4] := "E "
+  !string_notes[5] := "F "
+  !string_notes[6] := "F#"
+  !string_notes[7] := "G "
+  !string_notes[8] := "Ab"
+  !string_notes[9] := "A "
+  !string_notes[10] := "Bb"
+  !string_notes[11] := "B "
+  declare !all_notes[128]
+  declare $counter
+  $counter := 0
+  while ($counter<=127)
+    !all_notes[$counter] := !string_notes[$counter mod 12] & ($counter/12-2)
+    inc($counter)
+  end while
+  declare ui_value_edit $pop_neg(-1000000,1000000,1)
+  $pop_neg := 0
+  declare ui_value_edit $pop_note(0,127,1)
+  declare ui_label $pop_lbl(1,1)
+  declare ui_button $pop
+  declare ui_label $array_lbl(1,1)
+  declare @array_text
+  set_control_par(get_ui_id($array_lbl),$CONTROL_PAR_WIDTH,387)
+  set_control_par_str(get_ui_id($pop_lbl),$CONTROL_PAR_TEXT,"C -2")
+  set_control_par(get_ui_id($pop_lbl),$CONTROL_PAR_TEXT_ALIGNMENT,1)
+  set_control_par(get_ui_id($pop),$CONTROL_PAR_TEXT_ALIGNMENT,1)
+  set_control_par(get_ui_id($array_lbl),$CONTROL_PAR_TEXT_ALIGNMENT,1)
+  move_control_px($pop_neg,75+50,20)
+  move_control_px($pop_note,75+150,20)
+  move_control_px($pop_lbl,75+250,20)
+  move_control_px($pop,75+350,20)
+  move_control_px($array_lbl,75+50,50)
+  declare %array_A[10] := (2, 12, 22, 32, 42, 52, 62, 72, 82, 92)
+end on
+
+function print_array_a
+  @array_text := ""
+  $counter := 0
+  while ($counter<=9)
+    @array_text := @array_text & " | " & %array_A[$counter]
+    inc($counter)
+  end while
+  set_control_par_str(get_ui_id($array_lbl),$CONTROL_PAR_TEXT,@array_text)
+end function
+
+on persistence_changed
+  call print_array_a
+end on
+
+on ui_control($pop_note)
+  set_control_par_str(get_ui_id($pop_lbl),$CONTROL_PAR_TEXT,!all_notes[$pop_note])
+end on
+
+on ui_control($pop)
+  if (search(%Array_A,$pop_note) # -1)
+    $counter := search(%Array_A,$pop_note)+1
+    while ($counter<num_elements(%Array_A))
+      %Array_A[$counter-1] := %Array_A[$counter]
+      inc($counter)
+    end while
+    %Array_A[num_elements(%Array_A)-1] := $pop_neg
+  else
+    set_control_par_str(get_ui_id($array_lbl),$CONTROL_PAR_TEXT,"pop note note found in array")
+    wait(3000000)
+  end if
+  call print_array_a
+end on
+

@@ -1,0 +1,87 @@
+on init
+    { 
+        An example on how to pop out an element from an array
+        Jump to *here* marker for the little algo
+
+        This is a simple pop algorithm, that pops one given element
+        at a time and moves all the subsequent elements down one position
+        with the added feature to add a custom given value in the last position
+    }
+    set_ui_height_px(100)
+    set_ui_color(9222222h)
+    make_perfview
+    declare !string_notes[12]
+        !string_notes [ 0 ] := "C "
+        !string_notes [ 1 ] := "C#"
+        !string_notes [ 2 ] := "D "
+        !string_notes [ 3 ] := "Eb"
+        !string_notes [ 4 ] := "E "
+        !string_notes [ 5 ] := "F "
+        !string_notes [ 6 ] := "F#"
+        !string_notes [ 7 ] := "G "
+        !string_notes [ 8 ] := "Ab"
+        !string_notes [ 9 ] := "A "
+        !string_notes [10 ] := "Bb"
+        !string_notes [11 ] := "B "
+    declare !all_notes[128]
+
+    define OFFSET := 75
+
+    declare counter
+    for counter := 0 to 127
+        all_notes[counter] := !string_notes[counter mod 12] & (counter / 12) - 2
+    end for
+
+    declare ui_value_edit pop_neg (-1000000, 1000000, 1)
+        pop_neg := 0
+    declare ui_value_edit pop_note (0, 127, 1)
+    declare ui_label pop_lbl (1, 1)
+    declare ui_button pop
+    declare ui_label array_lbl (1, 1)
+    declare @array_text
+        array_lbl -> width := 387
+
+        pop_lbl -> text := "C -2"
+        pop_lbl -> text_alignment := 1
+        pop -> text_alignment := 1
+        array_lbl -> text_alignment := 1
+
+        move_control_px(pop_neg, OFFSET + 50, 20)
+        move_control_px(pop_note, OFFSET + 150, 20)
+        move_control_px(pop_lbl, OFFSET + 250, 20)
+        move_control_px(pop, OFFSET + 350, 20)
+        move_control_px(array_lbl, OFFSET + 50, 50)
+    
+    declare array_A [10] := (2, 12, 22, 32, 42, 52, 62, 72, 82, 92)
+end on
+
+function print_array_a
+    @array_text := ""
+    for counter := 0 to 9
+        @array_text := @array_text & " | " & array_A[counter]
+    end for
+    array_lbl -> text := array_text
+end function
+
+on persistence_changed
+    call print_array_a
+end on
+
+on ui_control (pop_note)
+    pop_lbl -> text := all_notes[pop_note]
+end on
+
+on ui_control (pop)
+
+    if search(Array_A, pop_note) # -1
+        {{ *here* }}
+        for counter := search(Array_A, pop_note)+1 to num_elements(Array_A)-1
+            Array_A[counter-1] := Array_A[counter]
+        end for
+        Array_A[num_elements(Array_A)-1] := pop_neg
+    else
+        array_lbl -> text := "pop note note found in array"
+        wait(3000000)
+    end if
+    call print_array_a
+end on

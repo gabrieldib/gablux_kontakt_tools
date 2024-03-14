@@ -9,3 +9,7 @@ and all your family until the end of time. No I won't and I won't know. But you 
 Also feel free to reach out on discord, email, in person (no).
 
 Have fun!
+
+Change Log:
+    v0.001 - 2024/03/13
+        Added Array Pop Element script
