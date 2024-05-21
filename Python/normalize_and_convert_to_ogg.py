@@ -33,7 +33,6 @@ def normalize_wav_file(wav_file, output_path):
     print(f"    Normalized file loudness: {loudness_after:.2f} LUFS")
 
     print("    writing normalized file into ", output_path)
-	
     # Save the loudness normalized audio
     sf.write(output_path, loudness_normalized_audio, rate)
 
