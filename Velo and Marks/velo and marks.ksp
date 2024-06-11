@@ -1,0 +1,228 @@
+{ #pragma save_compiled_source Resources/scripts/velo_and_marks.txt }
+on init
+    set_ui_color(9222222h)
+    set_ui_height_px(200)
+    make_perfview
+    declare velo_counter
+    declare layer_counter
+    declare mic_counter
+    declare all_events_counter
+    declare all_events [128]
+    declare vol_delta
+    declare event_vol
+
+    declare read ui_button mark1 // layer 1
+    declare read ui_button mark2 // layer 2
+    declare read ui_button mark3 // velocity 1
+    declare read ui_button mark4 // velocity 2
+    declare read ui_button mark5 // velocity 3
+    declare read ui_button mark6 // mic 1
+    declare read ui_button mark7 // mic 2
+
+    move_control_px(mark1, 150, 20)
+    move_control_px(mark2, 150, 50)
+    move_control_px(mark3, 250, 20)
+    move_control_px(mark4, 250, 50)
+    move_control_px(mark5, 250, 80)
+    move_control_px(mark6,  50, 20) // layers
+    move_control_px(mark7,  50, 50) // layers
+
+    declare ui_label pan_piano_lb (1,1)
+    set_text(pan_piano_lb, "piano pan")
+    declare read ui_slider pan_piano (-1000, 1000)
+    
+    declare ui_label pan_synth_lb (1,1)
+    set_text(pan_synth_lb, "synth pan")
+    declare read ui_slider pan_synth (-1000, 1000)
+
+    move_control_px(pan_piano_lb, 350, 20)
+    move_control_px(pan_piano,    350, 50)
+    move_control_px(pan_synth_lb, 450, 20)
+    move_control_px(pan_synth,    450, 50)
+
+    declare ui_label vol_piano_lb (1,1)
+    set_text(vol_piano_lb, "piano vol")
+    declare read ui_slider vol_piano (-64000, 0)
+    
+    declare ui_label vol_synth_lb (1,1)
+    set_text(vol_synth_lb, "synth vol")
+    declare read ui_slider vol_synth (-64000, 0)
+
+    move_control_px(vol_piano_lb, 350,  80)
+    move_control_px(vol_piano,    350, 110)
+    move_control_px(vol_synth_lb, 450,  80)
+    move_control_px(vol_synth,    450, 110)
+
+    mark1 -> text := "mic 1"
+    mark2 -> text := "mic 2" 
+    mark3 -> text := "velo 1"
+    mark4 -> text := "velo 2"
+    mark5 -> text := "velo 3"
+    mark6 -> text := "piano"
+    mark7 -> text := "synth"
+
+    declare get_event
+
+    declare mic_ids   [2]
+        mic_ids   [0] := get_ui_id(mark1)
+        mic_ids   [1] := get_ui_id(mark2)
+
+    declare velo_ids  [3]
+        velo_ids  [0] := get_ui_id(mark3)
+        velo_ids  [1] := get_ui_id(mark4)
+        velo_ids  [2] := get_ui_id(mark5)
+    
+    declare layer_ids [2]
+        layer_ids [0] := get_ui_id(mark6)
+        layer_ids [1] := get_ui_id(mark7)
+
+    declare read pan_data [ 2 ]
+    declare read vol_data [ 2 ]
+
+    //fn01_set_pan
+    declare fn01.a.layer
+    //fn02_set_vol
+    declare fn02.a.layer
+
+end on
+
+
+on note
+    ignore_event(EVENT_ID)
+    disallow_group(ALL_GROUPS)
+
+    for layer_counter := 0 to 1
+
+        if layer_ids[ layer_counter ] -> value = 1
+            for mic_counter := 0 to 1
+                
+                if mic_ids[mic_counter] -> value = 1
+                    for velo_counter := 0 to 2
+
+                        if velo_ids[velo_counter] -> value = 1
+                            get_event := play_note(EVENT_NOTE, velo_counter * 42 + 1, 0, -1)
+                            
+                            set_event_mark(get_event, sh_left(MARK_5, velo_counter)  + ...
+                                                      sh_left(MARK_3, mic_counter)   + ...
+                                                      sh_left(MARK_1, layer_counter)   ...
+                            )
+                            set_event_par_arr(get_event, EVENT_PAR_ALLOW_GROUP, 0, ALL_GROUPS)
+
+                            set_event_par_arr(...
+                                get_event, ...
+                                EVENT_PAR_ALLOW_GROUP, 1, layer_counter * 2 + mic_counter)
+
+                            change_pan(...
+                                get_event, ...
+                                pan_data [ layer_counter ], ... 
+                                0 ...
+                            )
+                            change_vol(...
+                                get_event, ...
+                                vol_data [ layer_counter ], ... 
+                                0 ...
+                            )
+                            message("Playing L: " & layer_counter & " | M: " & mic_counter & " | V: " & velo_counter)
+                            message("    EVENT: " & ev100(get_event))
+                            message("    MARK : " & ...
+                                sh_left(MARK_5, velo_counter  ) + ...
+                                sh_left(MARK_3, mic_counter   ) + ...
+                                sh_left(MARK_1, layer_counter )   ...
+                            )
+                            message("    VOL: " & vol_data[layer_counter])
+                            message("    PAN: " & pan_data[layer_counter])
+                        end if
+                    end for
+                end if
+            end for
+        end if
+    end for
+end on
+
+function fn01_set_pan
+    for mic_counter := 0 to 1
+        if mic_ids[ mic_counter ] -> value = 1
+
+            if layer_ids[ fn01.a.layer ] -> value = 1
+                for velo_counter := 0 to 2
+                    if velo_ids[ velo_counter ] -> value = 1
+                        change_pan(...
+                            by_marks(...
+                                sh_left(MARK_1, fn01.a.layer ) ...
+                            ), ...
+                            pan_data [ fn01.a.layer ], ... 
+                            0 ...
+                        )
+                    end if
+                end for
+            end if
+
+        end if
+    end for
+end function
+
+define ev100(#arg#) := int_to_real(#arg#)/100.0
+
+function fn02_set_vol
+    get_event_ids(all_events)
+    for all_events_counter := 0 to search(all_events, 0) - 1
+        for mic_counter := 0 to 1
+            if mic_ids[mic_counter] -> value = 1
+                for velo_counter := 0 to 2
+                    if velo_ids[velo_counter] -> value = 1
+                        if get_event_mark(all_events[all_events_counter], ...
+                            sh_left(MARK_5, velo_counter ) + ...
+                            sh_left(MARK_3, mic_counter  ) + ...
+                            sh_left(MARK_1, fn02.a.layer )   ...
+                            ) = 1
+
+                            event_vol := get_event_par(all_events[all_events_counter], EVENT_PAR_VOLUME)
+                            vol_delta := event_vol - vol_data [ fn02.a.layer ]
+
+                            change_vol( ...
+                                all_events[all_events_counter], ...
+                                -vol_delta, ...
+                                1 ...
+                            )
+                            message("INFO L: " & fn02.a.layer & " | M: " & mic_counter & " | V: " & velo_counter)
+                            message("    EVENT: " & ev100(all_events[all_events_counter]) & " volume =  " & get_event_par(all_events[all_events_counter], EVENT_PAR_VOLUME))
+                            message("    MARK : " & ...
+                                sh_left(MARK_5, velo_counter ) + ...
+                                sh_left(MARK_3, mic_counter  ) + ...
+                                sh_left(MARK_1, fn02.a.layer )   ...
+                            )
+
+                        end if
+                    end if
+                end for
+            end if
+        end for
+    end for
+
+
+end function
+
+on ui_control (pan_piano)
+    // message("    Pan 0 = " & pan_piano)
+    pan_data [ 0 ] := pan_piano
+    fn01.a.layer := 0
+    call fn01_set_pan
+end on
+on ui_control (pan_synth)
+    // message("    Pan 1 = " & pan_synth)
+    pan_data [ 1 ] := pan_synth
+    fn01.a.layer := 1
+    call fn01_set_pan    
+end on
+on ui_control (vol_piano)
+    // message("    Vol 0 = " & vol_piano)
+    vol_data [ 0 ] := vol_piano
+    fn02.a.layer := 0
+    call fn02_set_vol
+end on
+on ui_control (vol_synth)
+    // message("    Vol 1 = " & vol_synth)
+    vol_data [ 1 ] := vol_synth
+    fn02.a.layer := 1
+    call fn02_set_vol    
+end on
