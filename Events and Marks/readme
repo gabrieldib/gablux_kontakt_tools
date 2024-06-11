@@ -1,0 +1,13 @@
+I created this example when I needed to have control over events in an architecture with multiple
+layers, microphones and velocities (in case of the need for transitioning velocities with a midi CC)
+
+turns out setting parameters to an event, multiple events or events selected by marks or combination of
+marks, may not be as straight forward as one would imagine. Or at least not at first.
+
+In general, the way to think about using marks is that you will probably want to select multiple events with it.
+
+so, when creating the event, set its parameters using the event itself.
+
+later, when using sliders for those parameters like vol, pan or tuning, then use the marks and their combinations.
+
+If this explanation didn't help a bit, jsut look for my on Kontakt's Discord server (@Gablux)
