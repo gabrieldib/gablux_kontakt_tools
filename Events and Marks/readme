@@ -1,3 +1,5 @@
+2024/6/11 by Gablux
+
 I created this example when I needed to have control over events in an architecture with multiple
 layers, microphones and velocities (in case of the need for transitioning velocities with a midi CC)
 
