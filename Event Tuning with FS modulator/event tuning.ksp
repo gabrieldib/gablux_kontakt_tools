@@ -12,6 +12,7 @@ on init
 	declare read ui_button switch
 	
 	declare note_id[128]
+	declare counter
 	declare fs_value
 	declare pitch_calc
 	declare !switch_text[2]
@@ -36,6 +37,18 @@ on ui_control (pitch)
 		pitch_lb -> text := round((3.0*int_to_real(pitch)/250000.0)*100.0)/100.0
 	end if
 	message("pitch is " & pitch_calc)
+
+	if switch = 0 
+		fs_value := input
+	else
+		fs_value := pitch_calc
+	end if
+	set_event_par_arr(...
+		by_marks(MARK_1), ...
+		EVENT_PAR_MOD_VALUE_EX_ID, ...
+		fs_value, ...
+		1 ...
+	)
 end on
 on ui_control (switch)
 	switch -> text := switch_text[switch]
@@ -46,6 +59,9 @@ on note
 	ignore_event(EVENT_ID)
 
 	note_id[EVENT_NOTE] := play_note(EVENT_NOTE,EVENT_VELOCITY,0,-1)
+
+	set_event_mark(note_id[EVENT_NOTE], MARK_1)
+
 	if switch = 0 
 		fs_value := input
 	else
@@ -59,3 +75,4 @@ on note
 	)
 	message("pitch is modulated to " & fs_value)
 end on
+
