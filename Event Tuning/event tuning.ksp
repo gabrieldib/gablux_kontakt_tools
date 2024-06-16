@@ -1,0 +1,61 @@
+{
+  Example of how to tune/fine tune events using from script modulator
+}
+on init
+	message("")
+	set_ui_height_px(70)
+	set_ui_color(9323232h)
+	make_perfview
+	declare read ui_slider pitch(-1000000,1000000)
+	declare ui_label pitch_lb (1,1)
+	declare read ui_value_edit input (-1000000, 1000000, 1)
+	declare read ui_button switch
+	
+	declare note_id[128]
+	declare fs_value
+	declare pitch_calc
+	declare !switch_text[2]
+		switch_text[0] := "value edit"
+		switch_text[1] := "knob"
+
+	pitch_lb  -> text := 3*pitch/250000
+	switch    -> text := switch_text[switch]
+
+	move_control_px(pitch,     50, 20)
+	move_control_px(pitch_lb, 150, 20)
+	move_control_px(input,    250, 20)
+	move_control_px(switch,   350, 20)
+end on
+	
+on ui_control (pitch)
+	if pitch -> key_shift = 0
+		pitch_calc := (pitch / 83333) * 83333
+		pitch_lb -> text := 3*pitch/250000
+	else
+		pitch_calc := pitch
+		pitch_lb -> text := round((3.0*int_to_real(pitch)/250000.0)*100.0)/100.0
+	end if
+	message("pitch is " & pitch_calc)
+end on
+on ui_control (switch)
+	switch -> text := switch_text[switch]
+end on
+
+
+on note
+	ignore_event(EVENT_ID)
+
+	note_id[EVENT_NOTE] := play_note(EVENT_NOTE,EVENT_VELOCITY,0,-1)
+	if switch = 0 
+		fs_value := input
+	else
+		fs_value := pitch_calc
+	end if
+	set_event_par_arr(...
+		note_id[EVENT_NOTE], ...
+		EVENT_PAR_MOD_VALUE_EX_ID, ...
+		fs_value, ...
+		1 ...
+	)
+	message("pitch is modulated to " & fs_value)
+end on
