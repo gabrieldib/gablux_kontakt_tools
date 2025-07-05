@@ -9,6 +9,8 @@
 # 3) it will NOT format the whole file at once
 # 4) it will NOT format multiple line selections
 
+# in short: select a line or click on it and press the shortcut defined on the keybindings
+
 import sublime, sublime_plugin, re
 
 # ─── regex to capture indent, head, body ────────────────────────────────────
