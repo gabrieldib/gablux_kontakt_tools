@@ -16,13 +16,34 @@ import sublime, sublime_plugin, re
 # ─── regex to capture indent, head, body ────────────────────────────────────
 rx = re.compile(r"^([ \t]*)([^\[\]]+\[)([^\]]*?)\]")
 
+# --- helper ---------------------------------------------------------------
+def split_top_level(s: str):
+    """Return a list of items separated by commas *only at depth 0*."""
+    parts, buf, depth = [], [], 0
+    i, n = 0, len(s)
+    while i < n:
+        ch = s[i]
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth = max(0, depth - 1)
+        elif ch == ',' and depth == 0:
+            parts.append(''.join(buf).strip())
+            buf = []
+            i += 1
+            continue
+        buf.append(ch)
+        i += 1
+    parts.append(''.join(buf).strip())
+    return parts
+
 def wrap(indent: str, head: str, body: str, indent_unit: str) -> str:
     if ',' not in body:                       # already single-index
         print("no commas, aborting formatting...")
         return indent + head + body + ']'
 
     print("Formatting array...")
-    parts = [p.strip() for p in body.split(',')]
+    parts = split_top_level(body)
     body_indent = indent + indent_unit
 
     def line(pre, txt, comma=False):
@@ -39,7 +60,7 @@ def wrap(indent: str, head: str, body: str, indent_unit: str) -> str:
 
     # then we reconstruct the lines aligning the '...'s
     formatted_lines = [
-        (e[:-3] + ' ' * (largest_width - len(e) + 3) + '...')
+        (e[:-3] + ' ' * (largest_width - len(e)) + ' ...')
         if e.endswith(' ...') else e           # notice the space before dots ( on purpose!)
         for e in lines
     ]
