@@ -1,0 +1,23 @@
+{
+This is a Sublime KSP syntax code, not vanilla KSP.
+}
+
+function array_pop(array, index_to_pop, default_value)
+    declare counter
+    for counter := index_to_pop to num_elements(array)-2
+        array[counter] := array[counter+1]
+    end for
+    array[num_elements(array)-1] := default_value
+end function
+
+function 2d_array_pop(md_array, d1_index_to_pop, d2_index_to_pop, d2_size, default_value)
+    declare range_start := d1_index_to_pop * d2_size + d2_index_to_pop
+    declare range_end   := d1_index_to_pop * d2_size + d2_size-1
+    declare counter
+    if range_start < num_elements(md_array)-1
+        for counter := range_start to range_end
+            md_array[counter] := md_array[counter+1]
+        end for
+    end if
+    md_array[d1_index_to_pop * d2_size + d2_size-1] := default_value
+end function
