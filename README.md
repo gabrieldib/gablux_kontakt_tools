@@ -14,8 +14,15 @@ PS: Right! KSP files are sublime text code (extended KSP) and txt files are comp
 
 
 Change Log:
-    v0.002 - 2025/07/06
+<ul>
+    <li>
+        ### v0.002 - 2025/07/06
         This is a stacked log, I added a bunch of things. Last ones being some array basic functions line pop an element
         and a sublime text plugin to format multi dimensional arrays from one line to multiple lines neatly with one shortcut.
-    v0.001 - 2024/03/13
+    </li>
+    <li>
+        ### v0.001 - 2024/03/13
         Added Array Pop Element script
+    </li>
+    
+        
