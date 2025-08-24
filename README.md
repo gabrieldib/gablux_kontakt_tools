@@ -16,19 +16,19 @@ PS: Right! KSP files are sublime text code (extended KSP) and txt files are comp
 Change Log:
 <ul>
     <li>
-        v0.003 - 2025/08/24
+        2025/08/24
         Added sublime text plugin "AddFunctionId" to scan the current open and selected file
         for KSP functions and rename them with a prefix hashed id. This is specially useful
         when creating modules to be imported later into larger projects with lots of curstom
         user functions.
     </li>
     <li>
-        v0.002 - 2025/07/06
+        2025/07/06
         This is a stacked log, I added a bunch of things. Last ones being some array basic functions line pop an element
         and a sublime text plugin to format multi dimensional arrays from one line to multiple lines neatly with one shortcut.
     </li>
     <li>
-        v0.001 - 2024/03/13
+        2024/03/13
         Added Array Pop Element script
     </li>
     
