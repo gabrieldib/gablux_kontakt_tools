@@ -1,8 +1,41 @@
+# 📊 Format Multidimensional Arrays & Functions
+
+Cleans up messy, one-line array or function declarations by formatting them into vertically aligned, human-readable blocks — ideal for scripting languages like KSP or Lua.
+
+#### 🔢 `format_multidim_array.py`
+
+Transforms a single-line multidimensional array into a well-indented, visually aligned layout:
+
+**Before:**
+
+```ksp
+my_array[1, 2, 3, [10, 20, 30]]
+```
+
+**After:**
+
+```ksp
+my_array[         ...
+    1,            ...
+    2,            ...
+    3             ...
+]
+```
+
+* Only processes single-line selections.
+* Preserves original indentation style (tabs vs. spaces).
+* Visually aligns `...` placeholders for clarity.
+
+#### `format_multiline_function.py`
+
+Applies similar formatting to function declarations or calls that span multiple arguments or parameters, improving readability for large argument lists.
+
+
 # Sublime Text Plugin: Add Hashed Function IDs
 
 This Sublime Text plugin scans your currently active file for `function` declarations, automatically prepends each function name with a unique hash-based ID, and stores metadata about each transformation in a persistent database.
 
-### ✨ Features
+### Features
 
 * Automatically renames function declarations to include a hashed prefix:
 
@@ -72,3 +105,4 @@ The plugin will **not reprocess** functions that:
 ### License
 
 MIT License — free to use, modify, and distribute.
+
