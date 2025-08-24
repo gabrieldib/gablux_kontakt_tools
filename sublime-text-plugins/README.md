@@ -31,7 +31,8 @@ my_array[         ...
 Applies similar formatting to function declarations or calls that span multiple arguments or parameters, improving readability for large argument lists.
 
 
-# Add Function IDs
+
+# Add Function ID
 
 This Sublime Text plugin scans your currently active file for `function` declarations, automatically prepends each function name with a unique hash-based ID, and stores metadata about each transformation in a persistent database.
 
@@ -105,5 +106,6 @@ The plugin will **not reprocess** functions that:
 ### License
 
 MIT License — free to use, modify, and distribute.
+
 
 
